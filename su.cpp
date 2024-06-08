@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2024 Shaoxing Wang
+ *
+ * Modifications:
+ * - 2024-06-08: Port for HarmonyOS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +19,7 @@
  */
 
 #include <errno.h>
-#include <error.h>
+// #include <error.h>
 #include <getopt.h>
 #include <paths.h>
 #include <pwd.h>
@@ -24,7 +28,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <private/android_filesystem_config.h>
+// #include <private/android_filesystem_config.h>
+#define AID_ROOT 0
+#define AID_SHELL 2000
+#define error(exitcode, errnum, format, ...) \
+    do { \
+        fprintf(stderr, format ": %s\n", ##__VA_ARGS__, strerror(errnum)); \
+        exit(exitcode); \
+    } while (0)
+
 
 void pwtoid(const char* tok, uid_t* uid, gid_t* gid) {
     struct passwd* pw = getpwnam(tok);
